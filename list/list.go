@@ -179,7 +179,7 @@ func FindMiddleNode(head, tail *node) *node {
 	middleRunner := head
 	fastRunner := head.next
 
-	for fastRunner != tail && fastRunner != nil {
+	for fastRunner != tail && fastRunner != tail.next {
 		middleRunner = middleRunner.next
 		fastRunner = fastRunner.next
 		if fastRunner != nil {
@@ -195,12 +195,11 @@ func (l *LinkedList) Mergesort() {
 	}
 
 	buffer := MakeLinkedList(l.GetSize())
-	mergesort(l.head, l.tail, buffer)
+	mergesort(l.head, l.tail, buffer, (*l))
 }
 
 func merge(head, mid, tail *node, buffer *LinkedList) {
-    fmt.Printf("merge(head=%d, mid=%d, tail=%d)\n", head.value, mid.value, tail.value)
-    left := head
+	left := head
 	right := mid.next
 	sorted := buffer.head
 
@@ -216,15 +215,14 @@ func merge(head, mid, tail *node, buffer *LinkedList) {
 	}
 
 	sorted = buffer.head
+
 	for runner := head; runner != tail.next; runner = runner.next {
 		runner.value = sorted.value
 		sorted = sorted.next
-		runner = runner.next
 	}
 }
 
-func mergesort(head, tail *node, buffer LinkedList) {
-    fmt.Printf("mergesort(head=%d, tail=%d)\n", head.value, tail.value)
+func mergesort(head, tail *node, buffer LinkedList, l LinkedList) {
 	if head == tail {
 		return
 	}
@@ -235,7 +233,7 @@ func mergesort(head, tail *node, buffer LinkedList) {
 
 	mid := FindMiddleNode(head, tail)
 
-	mergesort(head, mid, buffer)
-	mergesort(mid.next, tail, buffer)
+	mergesort(head, mid, buffer, l)
+	mergesort(mid.next, tail, buffer, l)
 	merge(head, mid, tail, &buffer)
 }
