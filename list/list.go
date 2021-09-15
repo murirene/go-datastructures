@@ -28,12 +28,20 @@ func (n node) String() string {
 	return fmt.Sprintf("(%d)%s", n.value, link)
 }
 
+func (n node) GetValue() int {
+	return n.value
+}
+
 // Make a linked list
-func MakeLinkedList() LinkedList {
+func MakeLinkedList(size int) LinkedList {
 	list := LinkedList{
 		head: nil,
 		tail: nil,
 		size: 0,
+	}
+
+	for i := 0; i < size; i++ {
+		list.AddFirst(0)
 	}
 
 	return list
@@ -60,7 +68,6 @@ func (list *LinkedList) AddFirst(value int) {
 		next:  nil,
 		prev:  nil,
 	}
-
 	if list.head == nil {
 		list.head = newNode
 		list.tail = newNode
@@ -100,15 +107,17 @@ func (list *LinkedList) RemoveFirst() (int, error) {
 		return 0, errors.New("Can't remove from an Empty List")
 	}
 
-	purged := list.head
+	purged := list.head.value
 	list.head = list.head.next
-	list.head.prev = nil
+	if list.head != nil {
+		list.head.prev = nil
+	}
 	list.size -= 1
 	if list.size == 0 {
 		list.tail = nil
 	}
 
-	return purged.value, nil
+	return purged, nil
 }
 
 func (list *LinkedList) RemoveLast() (int, error) {
@@ -116,15 +125,17 @@ func (list *LinkedList) RemoveLast() (int, error) {
 		return 0, errors.New("Can't remove from an Empty List")
 	}
 
-	purged := list.tail
+	purged := list.tail.value
 	list.tail = list.tail.prev
-	list.tail.next = nil
+	if list.tail != nil {
+		list.tail.next = nil
+	}
 	list.size -= 1
 	if list.size == 0 {
 		list.head = nil
 	}
 
-	return purged.value, nil
+	return purged, nil
 }
 
 // Get the Linked List Size
@@ -151,4 +162,80 @@ func (list LinkedList) PeekLast() (int, bool) {
 	}
 
 	return list.tail.value, false
+}
+
+func (list LinkedList) GetHead() *node {
+	return list.head
+}
+
+func (list LinkedList) GetTail() *node {
+	return list.tail
+}
+
+func FindMiddleNode(head, tail *node) *node {
+	if head == tail {
+		return head
+	}
+	middleRunner := head
+	fastRunner := head.next
+
+	for fastRunner != tail && fastRunner != nil {
+		middleRunner = middleRunner.next
+		fastRunner = fastRunner.next
+		if fastRunner != nil {
+			fastRunner = fastRunner.next
+		}
+	}
+	return middleRunner
+}
+
+func (l *LinkedList) Mergesort() {
+	if l.head == nil || l.tail == nil {
+		return
+	}
+
+	buffer := MakeLinkedList(l.GetSize())
+	mergesort(l.head, l.tail, buffer)
+}
+
+func merge(head, mid, tail *node, buffer *LinkedList) {
+    fmt.Printf("merge(head=%d, mid=%d, tail=%d)\n", head.value, mid.value, tail.value)
+    left := head
+	right := mid.next
+	sorted := buffer.head
+
+	for left != mid.next || right != tail.next {
+		if right == tail.next || (left != mid.next && left.value < right.value) {
+			sorted.value = left.value
+			left = left.next
+		} else {
+			sorted.value = right.value
+			right = right.next
+		}
+		sorted = sorted.next
+	}
+
+	sorted = buffer.head
+	for runner := head; runner != tail.next; runner = runner.next {
+		runner.value = sorted.value
+		sorted = sorted.next
+		runner = runner.next
+	}
+}
+
+func mergesort(head, tail *node, buffer LinkedList) {
+    fmt.Printf("mergesort(head=%d, tail=%d)\n", head.value, tail.value)
+	if head == tail {
+		return
+	}
+
+	if head == nil || tail == nil {
+		return
+	}
+
+	mid := FindMiddleNode(head, tail)
+
+	mergesort(head, mid, buffer)
+	mergesort(mid.next, tail, buffer)
+	merge(head, mid, tail, &buffer)
 }

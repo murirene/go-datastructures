@@ -5,9 +5,9 @@ import (
 	"go-data-structure/list"
 	"testing"
 )
-
-func CreateUpdateLinkedListTest(t *testing.T) {
-	linklist := list.MakeLinkedList()
+/*
+func TestCreateUpdateLinkedList(t *testing.T) {
+	linklist := list.MakeLinkedList(0)
 	size := linklist.GetSize()
 
 	if size != 0 {
@@ -74,8 +74,8 @@ func CreateUpdateLinkedListTest(t *testing.T) {
 	}
 }
 
-func CreateUpdateLinkedListTest2(t *testing.T) {
-	linklist := list.MakeLinkedList()
+func TestCreateUpdateLinkedList2(t *testing.T) {
+	linklist := list.MakeLinkedList(0)
 	size := linklist.GetSize()
 
 	if size != 0 {
@@ -139,5 +139,53 @@ func CreateUpdateLinkedListTest2(t *testing.T) {
 
 	if size != 0 {
 		t.Fatalf("Linklist Size %d is not 3", size)
+	}
+}
+
+func TestMiddleNode(t *testing.T) {
+    l := list.MakeLinkedList(0)
+    l.AddFirst(1)
+    middle := list.FindMiddleNode(l.GetHead(), l.GetTail())
+    
+    if middle != nil &&  middle.GetValue() != 1 {
+        t.Fatal("Value is not right")
+    }
+}
+
+func TestMiddleNode2(t *testing.T) {
+    l := list.MakeLinkedList(0)
+    l.AddFirst(1)
+    l.AddFirst(2)
+    middle := list.FindMiddleNode(l.GetHead(), l.GetTail())
+    
+    if middle != nil &&  middle.GetValue() != 2 {
+        t.Fatalf("Value is not right %d", middle.GetValue())
+    }
+}
+
+func TestMiddleNode3(t *testing.T) {
+    l := list.MakeLinkedList(0)
+    l.AddFirst(1)
+    l.AddFirst(2)
+    l.AddFirst(3)
+    middle := list.FindMiddleNode(l.GetHead(), l.GetTail())
+    
+    if middle != nil &&  middle.GetValue() != 2 {
+        t.Fatal("Value is not right")
+    }
+}
+*/
+func TestSorting(t *testing.T) {
+    l := list.MakeLinkedList(0) 
+    l.AddFirst(4)
+    l.AddFirst(3)
+    l.AddFirst(6)
+    l.AddFirst(7)
+    l.AddFirst(1)
+    l.Mergesort()
+    
+	str := fmt.Sprintf("%v\n", l)
+	if str != "(1)=>(2)=>(3)=>(4)=>(5)=>(6)" {
+		t.Fatalf("Stringify Failed, %v", l)
 	}
 }
