@@ -120,3 +120,71 @@ func (b BinarySearchTree) String() string {
 	dfsString(b.root, &sb)
 	return sb.String()
 }
+
+func bfsHelper(root *node, value int) *node {
+	if root.value == value {
+		return root
+	}
+
+	if root.value < value && root.right != nil {
+		return bfsHelper(root.right, value)
+	} else if root.value > value && root.left != nil {
+		return bfsHelper(root.left, value)
+	}
+
+	return nil
+}
+
+func findNextInOrder(n *node) *node {
+	if n.left == nil {
+		return n
+	}
+	return findNextInOrder(n.left)
+}
+
+func (b BinarySearchTree) Bfs(value int) *node {
+	return bfsHelper(b.root, value)
+}
+
+func (b *BinarySearchTree) Remove(value int) {
+	n := b.Bfs(value)
+	if b.size == 1 && n == nil {
+		b.root = nil
+		b.size = 0
+		return
+	}
+
+	parent := n.parent
+	if n.right != nil && n.left != nil {
+		nextNode := findNextInOrder(n.right)
+		if parent.value < nextNode.value {
+			parent.right = nextNode
+			nextNode.parent = parent
+			nextNode.left = n.left
+		} else {
+			parent.left = nextNode
+			nextNode.parent = parent
+			nextNode.left = n.left
+		}
+	} else if n.right != nil && parent.value < n.right.value {
+		parent.right = n.right
+		n.right.parent = parent
+	} else if n.right != nil && parent.value > n.right.value {
+		parent.left = n.right
+		n.right.parent = parent
+	} else if n.left != nil && parent.value > n.left.value {
+		parent.left = n.left
+		n.left.parent = parent
+	} else if n.left != nil && parent.value < n.left.value {
+		parent.right = n.left
+		n.left.parent = parent
+	} else {
+		if parent.right == n {
+			parent.right = nil
+		} else {
+			parent.left = nil
+		}
+	}
+
+	b.size -= 1
+}

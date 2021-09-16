@@ -27,4 +27,28 @@ func TestCRUBinarySearchTree(t *testing.T) {
 	if str != "(4)(3)(6)(2)(5)(9)" {
 		t.Fatalf("Failed BFS %s", str)
 	}
+
+	b.Remove(6)
+
+	str = b.BfsString()
+
+	if str != "(4)(3)(9)(2)(5)" {
+		t.Fatalf("Failed BFS %s", str)
+	}
+
+	str = fmt.Sprintf("%v", b)
+
+	if str != "(2)(3)(4)(5)(9)" && b.GetSize() != 5 {
+		t.Fatalf("Failed Stringer compare %v", b)
+	}
+
+	b.Remove(2)
+	b.Remove(9)
+	b.Remove(5)
+
+	str = b.BfsString()
+
+	if str != "(4)(3)" {
+		t.Fatalf("Failed BFS %s", str)
+	}
 }
