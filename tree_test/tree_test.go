@@ -43,11 +43,22 @@ func TestCRUBinarySearchTree(t *testing.T) {
 	}
 
 	b.Remove(2)
+	str = b.BfsString()
+
+	if str != "(4)(3)(9)(5)" {
+		t.Fatalf("Failed BFS %s", str)
+	}
 	b.Remove(9)
-	b.Remove(5)
 
 	str = b.BfsString()
 
+	if str != "(4)(3)(5)" {
+		t.Fatalf("Failed BFS %s", str)
+	}
+
+	b.Remove(5)
+
+	str = b.BfsString()
 	if str != "(4)(3)" {
 		t.Fatalf("Failed BFS %s", str)
 	}
