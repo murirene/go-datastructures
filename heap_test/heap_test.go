@@ -28,3 +28,16 @@ func TestHeapInsert(t *testing.T) {
 		t.Fatalf("%v is not %v", values, results)
 	}
 }
+
+func TestHeapDelete(t *testing.T) {
+	results := []int{2, 3, 6, 5}
+
+	h := heap.MakeMinHeap()
+	h.Insert(3).Insert(1).Insert(6).Insert(5).Insert(2).Insert(4)
+	h.Delete(1).Delete(4)
+
+	values := h.Values()
+	if sliceIsEqual(values, results) == false {
+		t.Fatalf("%v is not %v", values, results)
+	}
+}
