@@ -16,9 +16,9 @@ const (
 )
 
 type Vertix struct {
-	value    string
-	key      int
-	color    VISITED
+	value string
+	key   int
+	color VISITED
 }
 
 func (v Vertix) String() string {
@@ -45,9 +45,9 @@ func (g *AdjacencyMatrixGraph) AddVertix(key string) bool {
 		return false
 	}
 	v := &Vertix{
-		value:    key,
-		key:      len(g.vertices),
-		color:    WHITE,
+		value: key,
+		key:   len(g.vertices),
+		color: WHITE,
 	}
 
 	matrix := make([][]int, len(g.vertices)+1)
@@ -153,6 +153,12 @@ func (g AdjacencyMatrixGraph) getEdges(node Vertix) []*Vertix {
 	return children
 }
 
+func (g *AdjacencyMatrixGraph) initColor() {
+	for _, v := range g.vertices {
+		v.color = WHITE
+	}
+}
+
 func (g *AdjacencyMatrixGraph) BfsTraversal(key string) (string, error) {
 	var sb strings.Builder
 	node, ok := g.vertices[key]
@@ -181,5 +187,37 @@ func (g *AdjacencyMatrixGraph) BfsTraversal(key string) (string, error) {
 			sb.WriteString(fmt.Sprintf("(%s)", node.value))
 		}
 	}
+	g.initColor()
+	return sb.String(), nil
+}
+
+func (g *AdjacencyMatrixGraph) DfsTraversal(key string) (string, error) {
+	var sb strings.Builder
+	node, ok := g.vertices[key]
+
+	if ok != true {
+		return "", errors.New("Key not found")
+	}
+
+	q := make([]*Vertix, 0)
+	q = append(q, node)
+	for len(q) > 0 {
+		popLgth := len(q) - 1
+		node = q[popLgth]
+		q = q[:popLgth]
+
+		if node.color == GREY {
+			node.color = BLACK
+			edges := g.getEdges(*node)
+			for _, edge := range edges {
+				if edge.color == WHITE {
+					edge.color = GREY
+					q = append(q, edge)
+				}
+			}
+			sb.WriteString(fmt.Sprintf("(%s)", node.value))
+		}
+	}
+	g.initColor()
 	return sb.String(), nil
 }

@@ -38,4 +38,17 @@ func TestMakeAdjacencyMatrixGraph(t *testing.T) {
 	if strBfs != expected && err == nil {
 		t.Fatalf("%v != %s", strBfs, expected)
 	}
+
+	strBfs, err = G.BfsTraversal("B")
+
+	expected = "(B)(C)(D)(E)"
+	if strBfs != expected && err == nil {
+		t.Fatalf("%v != %s", strBfs, expected)
+	}
+
+	strBfs, err = G.BfsTraversal("A")
+	expected = "(A)(B)(C)(D)(E)"
+	if strBfs != expected && err == nil {
+		t.Fatalf("%v != %s", strBfs, expected)
+	}
 }
