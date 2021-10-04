@@ -28,7 +28,14 @@ func TestMakeAdjacencyMatrixGraph(t *testing.T) {
 	G.AddEdge("C", "D")
 	G.AddEdge("D", "E")
 	str = fmt.Sprintf("%v", G)
-	if str != "(A)->[B C](B)->[C D E](C)->[D](D)->[E](E)->[]" {
-		t.Fatalf("%v != (A)->[B C] (B)->[C D E] (C)->[D] (E)->[]", str)
+	expected := "(A)->[B C] (B)->[C D E] (C)->[D] (D)->[E] (E)->[]"
+	if str != expected {
+		t.Fatalf("%v != %s", str, expected)
+	}
+
+	strBfs, err := G.BfsTraversal("A")
+	expected = "(A)(B)(C)(D)(E)"
+	if strBfs != expected && err == nil {
+		t.Fatalf("%v != %s", strBfs, expected)
 	}
 }

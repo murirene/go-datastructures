@@ -19,8 +19,6 @@ type Vertix struct {
 	value    string
 	key      int
 	color    VISITED
-	parent   *Vertix
-	distance int
 }
 
 func (v Vertix) String() string {
@@ -28,12 +26,12 @@ func (v Vertix) String() string {
 }
 
 type AdjacencyMatrixGraph struct {
-	vertices map[string]Vertix
+	vertices map[string]*Vertix
 	matrix   [][]int
 }
 
 func MakeAdjacencyMatrixGraph() AdjacencyMatrixGraph {
-	vertices := make(map[string]Vertix, 0)
+	vertices := make(map[string]*Vertix, 0)
 	matrix := make([][]int, 0)
 	return AdjacencyMatrixGraph{
 		vertices: vertices,
@@ -46,12 +44,10 @@ func (g *AdjacencyMatrixGraph) AddVertix(key string) bool {
 	if ok == true {
 		return false
 	}
-	v := Vertix{
+	v := &Vertix{
 		value:    key,
 		key:      len(g.vertices),
 		color:    WHITE,
-		parent:   nil,
-		distance: 0,
 	}
 
 	matrix := make([][]int, len(g.vertices)+1)
@@ -88,8 +84,8 @@ func (g *AdjacencyMatrixGraph) AddEdge(key string, keyEdge string) (bool, error)
 	return true, nil
 }
 
-func getKey(vMap map[string]Vertix, idx int) (string, error) {
-	for key, v := range vMap {
+func (g AdjacencyMatrixGraph) getVertixByIdx(idx int) (string, error) {
+	for key, v := range g.vertices {
 		if v.key == idx {
 			return key, nil
 		}
@@ -98,7 +94,7 @@ func getKey(vMap map[string]Vertix, idx int) (string, error) {
 	return "", errors.New("Key does not exist")
 }
 
-func getSortedKeys(vertices map[string]Vertix) []string {
+func getSortedKeys(vertices map[string]*Vertix) []string {
 	keys := make([]string, 0)
 	for _, v := range vertices {
 		keys = append(keys, v.value)
@@ -112,11 +108,14 @@ func (g AdjacencyMatrixGraph) String() string {
 	var sb strings.Builder
 
 	keys := getSortedKeys(g.vertices)
-	for _, k := range keys {
+	for j, k := range keys {
 		var sb2 strings.Builder
 		idx := g.vertices[k].key
 		edges := g.matrix[idx]
-
+		vSpace := ""
+		if j > 0 {
+			vSpace = " "
+		}
 		for i, v := range edges {
 			// has an edge
 			if v == 1 {
@@ -125,7 +124,7 @@ func (g AdjacencyMatrixGraph) String() string {
 					space = " "
 				}
 
-				str, err := getKey(g.vertices, i)
+				str, err := g.getVertixByIdx(i)
 				if err != nil {
 					str = "Not Found"
 				}
@@ -133,7 +132,54 @@ func (g AdjacencyMatrixGraph) String() string {
 			}
 		}
 
-		sb.WriteString(fmt.Sprintf("(%s)->[%s]", k, sb2.String()))
+		sb.WriteString(fmt.Sprintf("%s(%s)->[%s]", vSpace, k, sb2.String()))
 	}
 	return sb.String()
+}
+
+func (g AdjacencyMatrixGraph) getEdges(node Vertix) []*Vertix {
+	children := make([]*Vertix, 0)
+	edges := g.matrix[node.key]
+	for idx, edge := range edges {
+		if edge == 1 {
+			key, err := g.getVertixByIdx(idx)
+			if err == nil {
+				v := g.vertices[key]
+				children = append(children, v)
+			}
+		}
+	}
+
+	return children
+}
+
+func (g *AdjacencyMatrixGraph) BfsTraversal(key string) (string, error) {
+	var sb strings.Builder
+	node, ok := g.vertices[key]
+
+	if ok != true {
+		return "", errors.New("Key not found")
+	}
+
+	stack := make([]*Vertix, 0)
+	node.color = GREY
+	stack = append(stack, node)
+
+	for len(stack) > 0 {
+		node = stack[0]
+		stack = stack[1:]
+
+		if node.color == GREY {
+			node.color = BLACK
+			edges := g.getEdges(*node)
+			for _, edge := range edges {
+				if edge.color == WHITE {
+					edge.color = GREY
+					stack = append(stack, edge)
+				}
+			}
+			sb.WriteString(fmt.Sprintf("(%s)", node.value))
+		}
+	}
+	return sb.String(), nil
 }
