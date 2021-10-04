@@ -3,6 +3,7 @@ package graph
 import (
 	"errors"
 	"fmt"
+	"sort"
 	"strings"
 )
 
@@ -87,33 +88,52 @@ func (g *AdjacencyMatrixGraph) AddEdge(key string, keyEdge string) (bool, error)
 	return true, nil
 }
 
+func getKey(vMap map[string]Vertix, idx int) (string, error) {
+	for key, v := range vMap {
+		if v.key == idx {
+			return key, nil
+		}
+	}
+
+	return "", errors.New("Key does not exist")
+}
+
+func getSortedKeys(vertices map[string]Vertix) []string {
+	keys := make([]string, 0)
+	for _, v := range vertices {
+		keys = append(keys, v.value)
+	}
+	sort.Strings(keys)
+
+	return keys
+}
+
 func (g AdjacencyMatrixGraph) String() string {
-    var ( getKey = func(vMap map[string]Vertix, idx int) (string, error) {
-        for key, v := range vMap {
-            if v.key == idx {
-                return key, nil
-            }
-        }
-
-        return "", errors.New("Key does not exist")
-    })
-
 	var sb strings.Builder
-	for key, v := range g.vertices {
+
+	keys := getSortedKeys(g.vertices)
+	for _, k := range keys {
 		var sb2 strings.Builder
-		edges := g.matrix[v.key]
+		idx := g.vertices[k].key
+		edges := g.matrix[idx]
 
 		for i, v := range edges {
+			// has an edge
 			if v == 1 {
-                str, err := getKey(g.vertices, i)
-                if err != nil {
-                    str = "Not Found"
-                }
-				sb2.WriteString(fmt.Sprintf(" %s", str))
+				space := ""
+				if sb2.Len() > 0 {
+					space = " "
+				}
+
+				str, err := getKey(g.vertices, i)
+				if err != nil {
+					str = "Not Found"
+				}
+				sb2.WriteString(fmt.Sprintf("%s%s", space, str))
 			}
 		}
 
-		sb.WriteString(fmt.Sprintf("(%s)->[%s]", key, sb2.String()))
+		sb.WriteString(fmt.Sprintf("(%s)->[%s]", k, sb2.String()))
 	}
 	return sb.String()
 }

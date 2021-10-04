@@ -20,15 +20,15 @@ func TestMakeAdjacencyMatrixGraph(t *testing.T) {
 	G.AddVertix("C")
 	G.AddVertix("D")
 	G.AddVertix("E")
-    G.AddEdge("A", "B")
-    G.AddEdge("A", "C")
-    G.AddEdge("B", "C")
-    G.AddEdge("B", "E")
-    G.AddEdge("B", "D")
-    G.AddEdge("C", "D")
-    G.AddEdge("D", "E")
+	G.AddEdge("A", "B")
+	G.AddEdge("A", "C")
+	G.AddEdge("B", "C")
+	G.AddEdge("B", "E")
+	G.AddEdge("B", "D")
+	G.AddEdge("C", "D")
+	G.AddEdge("D", "E")
 	str = fmt.Sprintf("%v", G)
-	if str != "(A)->[B,C] (B)->[C,D,E] (C)->[D] (E)->[]" {
-		t.Fatalf("%v != (A)->[B,C] (B)->[C,D,E] (C)->[D] (E)->[]", str)
+	if str != "(A)->[B C](B)->[C D E](C)->[D](D)->[E](E)->[]" {
+		t.Fatalf("%v != (A)->[B C] (B)->[C D E] (C)->[D] (E)->[]", str)
 	}
 }
