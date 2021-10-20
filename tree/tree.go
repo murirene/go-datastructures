@@ -1,6 +1,7 @@
 package tree
 
 import (
+	"errors"
 	"fmt"
 	"strings"
 )
@@ -85,6 +86,42 @@ func (b *BinarySearchTree) Add(value int) {
 
 func (b BinarySearchTree) GetSize() int {
 	return b.size
+}
+
+func getSecondLargest(r *node) (int, error) {
+	if r.right != nil {
+		return getSecondLargest(r.right)
+	}
+
+	if r.left != nil {
+		return r.left.value, nil
+	}
+
+	return r.value, nil
+}
+
+func getLargest(r *node) (int, error) {
+	if r.right != nil {
+		return getLargest(r.right)
+	}
+
+	return r.value, nil
+}
+
+func (b BinarySearchTree) GetSecondLargest() (int, error) {
+	if b.root == nil {
+		return 0, errors.New("Empty Tree!")
+	}
+
+	if b.root.right != nil {
+		return getSecondLargest(b.root)
+	}
+
+	if b.root.left != nil {
+		return getLargest(b.root.left)
+	}
+
+	return 0, errors.New("No second element")
 }
 
 func (b BinarySearchTree) BfsString() string {

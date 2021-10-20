@@ -63,3 +63,40 @@ func TestCRUBinarySearchTree(t *testing.T) {
 		t.Fatalf("Failed BFS %s", str)
 	}
 }
+
+func TestSecondLargest(t *testing.T) {
+	b := tree.MakeBinarySearchTree(20)
+	b.Add(10)
+	b.Add(5)
+	val, err := b.GetSecondLargest()
+
+	if val != 10 && err == nil {
+		t.Fatalf("%d is not 10", val)
+	}
+}
+
+func TestSecondLargest2(t *testing.T) {
+	b := tree.MakeBinarySearchTree(20)
+	b.Add(10)
+	b.Add(5)
+	b.Add(15)
+	b.Add(12)
+	val, err := b.GetSecondLargest()
+
+	if val != 15 && err == nil {
+		t.Fatalf("%d is not 15", val)
+	}
+}
+
+func TestSecondLargest3(t *testing.T) {
+	b := tree.MakeBinarySearchTree(20)
+	b.Add(30)
+	b.Add(23)
+	b.Add(21)
+	b.Add(22)
+	val, err := b.GetSecondLargest()
+
+	if val != 23 && err == nil {
+		t.Fatalf("%d is not 23", val)
+	}
+}
